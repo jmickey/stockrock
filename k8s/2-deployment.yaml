@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stockrock
+  namespace: platform
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: stockrock
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: stockrock
+    spec:
+      containers:
+        - name: stockrock
+          env:
+            - name: SYMBOL
+              valueFrom:
+                configMapKeyRef:
+                  name: stockrock-config
+                  key: SYMBOL
+            - name: NDAYS
+              valueFrom:
+                configMapKeyRef:
+                  name: stockrock-config
+                  key: NDAYS
+            - name: HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: stockrock-config
+                  key: HOST
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: stockrock-apikey
+                  key: apiKey
+          image: jmickey/stockrock:1.0.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: stockrock-port
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 100m
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: stockrock-port
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: stockrock-port

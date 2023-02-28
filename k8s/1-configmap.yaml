@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+  SYMBOL: "MSFT"
+  NDAYS: "7"
+  HOST: "0.0.0.0"
+kind: ConfigMap
+metadata:
+  name: stockrock-config
+  namespace: platform
